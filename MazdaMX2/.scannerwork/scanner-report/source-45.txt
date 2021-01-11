@@ -1,0 +1,234 @@
+using System;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
+
+using NUnit.Framework;
+using NUnit.Framework.Interfaces;
+using SpreadsheetLight;
+
+using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
+using SeleniumExtras.WaitHelpers;
+using OpenQA.Selenium.Interactions;
+using System.Threading;
+
+namespace MazdaMX2Test
+{
+    public class DealerSession
+    {
+        private IWebDriver _driver;
+        private WebDriverWait explicitWait;
+        private string[] arrNameImage;
+
+        public DealerSession(IWebDriver driver) 
+        {
+            _driver = driver;
+            explicitWait = new WebDriverWait(_driver, TimeSpan.FromSeconds(60));
+        }
+
+        public void IngresarURL(string enviorementUser, string enviorementQA, string dealerSite)
+        {
+            _driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(60);
+            _driver.Url = "https://" + enviorementUser + "@" + enviorementQA + "/distribuidores/mazda-"+ dealerSite;
+            _driver.Manage().Window.Maximize();
+            _driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(60);
+        }
+
+        public void ClickMethod(string buttonTest)
+        {
+            Actions action = new Actions(_driver);
+            var elementButton = _driver.FindElement(By.XPath(buttonTest));
+            //action.MoveToElement(elementButton).Click().Build().Perform();
+            elementButton.Click();
+
+        }
+
+        public void WaitForClick(string elementTest)
+        {
+            explicitWait.Until(ExpectedConditions.ElementToBeClickable(By.XPath(elementTest)));
+        }
+
+        public void WaitIsVisible(string elementWait)
+        {
+            explicitWait.Until(ExpectedConditions.ElementIsVisible(By.XPath(elementWait)));
+        }
+
+        public void WaitForPageLoad()
+        {
+            _driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(1000);
+        }
+
+        public void OnlyWait()
+        {
+
+            Thread.Sleep(2500);
+        }
+
+        public void ValidationText(string text1, string text2)
+        {
+            try
+            {
+                Assert.AreEqual(text1, text2);
+            }
+            catch (Exception err)
+            {
+                throw err;
+            }
+        }
+
+        public string ConvertText(string text1)
+        {
+            try
+            {
+                string newchain = text1.ToUpper();
+                string[] newversion = newchain.Split(' ');
+
+                if (newversion[0] != "SIGNATURE")
+                {
+                    newversion[0] = newversion[0].ToLower();
+                }
+
+                newchain = "";
+
+                for (int i = 0; i < newversion.Length; i++)
+                {
+                    newchain = newchain + newversion[i] + " ";
+                }
+
+                return newchain.Trim();
+            }
+            catch (Exception err)
+            {
+                throw err;
+            }
+        }
+
+        public void ValidationContentText(string text1, string text2)
+        {
+            try
+            {
+                Assert.That(text1, Does.Contain(text2));
+            }
+            catch (Exception err)
+            {
+                throw err;
+            }
+        }
+
+        public string ObtainAttribute(string objTest, string attributeObtain)
+        {
+            try
+            {
+                Thread.Sleep(500);
+                var attributeText = _driver.FindElement(By.XPath(objTest)).GetAttribute(attributeObtain);
+                return attributeText;
+            }
+            catch (Exception err)
+            {
+                throw err;
+            }
+        }
+
+        public string ObtainText(string objTest)
+        {
+            try
+            {
+                Thread.Sleep(500);
+                var attributeText = _driver.FindElement(By.XPath(objTest)).Text;
+                return attributeText;
+            }
+            catch (Exception err)
+            {
+                throw err;
+            }
+        }
+
+        public void closeWindow()
+        {
+            try
+            {
+                this.WaitForClick("//*[@class='mdp-flexiblecontent-alertbox-exitbtn-cta icon-mazda-mx-close']");
+                this.ClickMethod("//*[@class='mdp-flexiblecontent-alertbox-exitbtn-cta icon-mazda-mx-close']");
+            }
+            catch (Exception err)
+            {
+                throw err;
+            }
+        }
+
+        public void validateSEO(string siteDealer, string dealerName, string carName) 
+        {
+            try
+            {
+                this.ValidationContentText(siteDealer, dealerName);
+                this.ValidationContentText(siteDealer, carName);
+            }
+            catch (Exception err)
+            {
+                throw err;
+            }
+
+        }
+
+        public void validateFicha(string text1, string text2)
+        {
+            try
+            {
+                string downloadURL = _driver.FindElement(By.XPath("//*[@class='ng-link nm-link']")).GetAttribute("href");
+                _driver.Url = downloadURL;
+                this.WaitForPageLoad();
+
+                if (text1.Contains("SEDÁN"))
+                {
+                    text1 = text1 + text2;
+                    text1 = text1.Replace("SEDÁN", "SEDAN").Replace("-", "").Replace(" ", "").ToLower();
+                }
+                else
+                {
+                    text1 = text1 + text2;
+                    text1 = text1.Replace("-", "").Replace(" ", "").ToLower();
+                }
+                this.ValidationContentText(downloadURL.Replace("-", ""), text1);
+            }
+            catch (Exception err)
+            {
+                throw err;
+            }
+        }
+
+        public void ValidateImage(string descriptionCar,string nameImagen)
+        {
+            Thread.Sleep(5000);
+            /*
+            try
+            {
+                this.WaitIsVisible("//*[@data-analytics-link-description='" + descriptionCar + "']/div[@class='carBox ng-mazda']/img");
+
+                var imageVehicle = _driver.FindElement(By.XPath("//*[@data-analytics-link-description='" + descriptionCar + "']/div[@class='carBox ng-mazda']/img"));
+                var nameImage = imageVehicle.GetAttribute("src");
+                Regex rx = new Regex(@".(png+?|gif+?|jpe?g+?|bmp+?)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+                char[] charSeparators = new char[] { '/' };
+                arrNameImage = nameImage.Split(charSeparators, StringSplitOptions.RemoveEmptyEntries);
+
+                foreach (string valueSplit in arrNameImage)
+                {
+                    MatchCollection matches = rx.Matches(valueSplit);
+                    if (matches.Count.Equals(1))
+                    {
+                        string valueSplit2 = valueSplit.Replace("-", "");
+                        string descripcion2 = descriptionCar.ToLower().Replace("sedán", "sedan").Replace(" ", "").Replace("-", "");
+                        string nameimagen2 = nameImagen.ToLower().Replace(" ", "").Replace("-", "");
+                        this.ValidationContentText(valueSplit2, descripcion2);
+                        this.ValidationContentText(valueSplit2, nameimagen2);
+                    }
+                }
+
+            }
+            catch (Exception err)
+            {
+                throw err;
+            }
+            */
+        }
+    }
+}

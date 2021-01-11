@@ -1,0 +1,1 @@
+ 2xmlXì"hr?bin/Debug/Microsoft.VisualStudio.TestPlatform.TestFramework.xml
