@@ -118,6 +118,7 @@ namespace SeleniumExtentReportTest
             try
             {
                 DealerSession dealerSession = new DealerSession(driver);
+                String s = string.Empty;
                 dealerSession.reviewPrices("acapulco", "Acapulco", arrVehiculos, seoCheck, fichaCheck);
             }
             catch (Exception err)
