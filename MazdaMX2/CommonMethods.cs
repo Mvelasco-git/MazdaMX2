@@ -9,6 +9,7 @@ using OpenQA.Selenium.Interactions;
 using SeleniumExtras.WaitHelpers;
 using System.Threading;
 using System.Collections.Generic;
+using DocumentFormat.OpenXml.Bibliography;
 
 namespace MazdaMX2Test
 {
@@ -40,6 +41,8 @@ namespace MazdaMX2Test
         {
             Actions action = new Actions(_driver);
             //var elementButton = _driver.FindElement(By.XPath(buttonTest));
+            WebDriverWait wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
+            wait.Until(driver => buttonTest.Displayed);
             action.MoveToElement(buttonTest).Build().Perform();
             buttonTest.Click();
 
@@ -223,12 +226,12 @@ namespace MazdaMX2Test
 
                 if (text1.Contains("SEDÁN"))
                 {
-                    text1 = text1 + text2;
+                    //text1 = text1 + text2;
                     text1 = text1.Replace("SEDÁN", "SEDAN").Replace("-", "").Replace(" ", "").ToLower();
                 }
                 else
                 {
-                    text1 = text1 + text2;
+                    //text1 = text1 + text2;
                     text1 = text1.Replace("-", "").Replace(" ", "").ToLower();
                 }
                 this.ValidationContentText(downloadURL.Replace("-", "").Replace("_", ""), text1);
@@ -317,9 +320,12 @@ namespace MazdaMX2Test
                 DealerSession dealerSession = new DealerSession(_driver);
                 dealerSession.IngresarURL(userEnviorement, enviorement, masterUrlDealer);
 
-                IWebElement lnkVehiculos = DealerSession.WaitObjects("//*[@data-analytics-link-description='VEHÍCULOS']", _driver, 0);
-                dealerSession.ClickMethod(lnkVehiculos, _driver);
-                dealerSession.WaitForPageLoad();
+                IWebElement ctaAceptarCookies = DealerSession.WaitObjects("//a[@id='opt-accept']", _driver, 1);
+                dealerSession.ClickMethod(ctaAceptarCookies,_driver);
+
+                //IWebElement lnkVehiculos = DealerSession.WaitObjects("//*[@data-analytics-link-description='VEHÍCULOS']", _driver, 0);
+                //dealerSession.ClickMethod(lnkVehiculos, _driver);
+                //dealerSession.WaitForPageLoad();
 
                 for (int i = 0; i < arrVehiculos.GetLength(0); i++)
                 {
@@ -327,20 +333,30 @@ namespace MazdaMX2Test
                     string carPrice = "";
                     bool verify = Convert.ToBoolean(arrVehiculos.GetValue(i, 0));
                     string nameImage = arrVehiculos.GetValue(i, 1).ToString();
-                    string carname = arrVehiculos.GetValue(i, 2).ToString();
-                    string cartype = arrVehiculos.GetValue(i, 3).ToString().Replace("N/A", "");
+                    string catVehiculo = arrVehiculos.GetValue(i, 2).ToString();
+                    string carname = arrVehiculos.GetValue(i, 3).ToString();
+                    string cartype = arrVehiculos.GetValue(i, 4).ToString().Replace("N/A", "");
                     string descripcion = carname + " " + cartype;
                     descripcion = descripcion.Trim();
-                    string modelcar = arrVehiculos.GetValue(i, 4).ToString();
-                    string price = arrVehiculos.GetValue(i, 6).ToString();
+                    string modelcar = arrVehiculos.GetValue(i, 5).ToString();
+                    string price = arrVehiculos.GetValue(i, 7).ToString();
                     int totVersiones = 0;
 
                     if (verify == true)
                     {
-                        IWebElement imgVehiculo = DealerSession.WaitObjects("//*[@data-analytics-link-description='" + descripcion + "']/div[@class='carBox ng-mazda']/img", _driver, 0);
+                        
+                        IWebElement lnkVehiculos = DealerSession.WaitObjects("//*[@data-analytics-link-description='VEHÍCULOS']", _driver, 0);
+                        dealerSession.ClickMethod(lnkVehiculos, _driver);
+                        dealerSession.WaitForPageLoad();
+
+                        IWebElement categoVehicle = DealerSession.WaitObjects("//div[@id='categories']/div[@data-category='"+ catVehiculo + "']", _driver, 1);
+                        dealerSession.ClickMethod(categoVehicle,_driver);
+
+                        IWebElement imgVehiculo = DealerSession.WaitObjects("//*[@data-analytics-link-description='" + descripcion + "']/div[@class='carBox']/img", _driver, 1);
                         dealerSession.ValidateImage(imgVehiculo, nameImage);
 
-                        List<IWebElement> textNameCar = new List<IWebElement>(_driver.FindElements(By.XPath("//*[@class='type2 carName table-title']")));
+                        dealerSession.OnlyWait();
+                        List<IWebElement> textNameCar = new List<IWebElement>(_driver.FindElements(By.XPath("//*[@class='carName table-title']")));
                         List<IWebElement> priceCar = new List<IWebElement>(_driver.FindElements(By.XPath("//*[@class='carPrice table-title']")));
                         textName = textNameCar[i].Text;
                         carPrice = priceCar[i].Text;
@@ -372,7 +388,7 @@ namespace MazdaMX2Test
 
                         dealerSession.ValidationContentText(urlDealer, masterUrlDealer);
 
-                        for (int j = 5; j < arrVehiculos.GetUpperBound(1); j += 5)
+                        for (int j = 6; j < arrVehiculos.GetUpperBound(1); j += 5)
                         {
                             if (arrVehiculos[i, j] != null)
                             {

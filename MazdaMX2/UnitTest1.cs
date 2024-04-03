@@ -1,10 +1,6 @@
 ﻿using System;
 using System.IO;
-using System.Text;
 using System.Threading;
-using System.Diagnostics;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
 
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
@@ -55,7 +51,7 @@ namespace SeleniumExtentReportTest
                 _extent = new ExtentReports();
                 var dir = AppDomain.CurrentDomain.BaseDirectory.Replace("\\bin\\Debug", "");
                 DirectoryInfo di = Directory.CreateDirectory(dir + "\\Test_Execution_Reports");
-                var htmlReporter = new ExtentHtmlReporter(dir + "\\Test_Execution_Reports" + "\\Automation_Report" + ".html");
+                var htmlReporter = new ExtentSparkReporter(dir + "\\Test_Execution_Reports" + "\\Automation_Report" + ".html");
                 _extent.AddSystemInfo("Environment", "Mazda STAGE");
                 _extent.AddSystemInfo("User Name", "Manuel Velasco");
                 _extent.AttachReporter(htmlReporter);
