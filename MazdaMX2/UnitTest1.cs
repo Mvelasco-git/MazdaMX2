@@ -11,6 +11,7 @@ using WebDriverManager.DriverConfigs.Impl;
 
 using AventStack.ExtentReports;
 using AventStack.ExtentReports.Reporter;
+using AventStack.ExtentReports.Reporter.Config;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using SpreadsheetLight;
@@ -52,8 +53,13 @@ namespace SeleniumExtentReportTest
                 var dir = AppDomain.CurrentDomain.BaseDirectory.Replace("\\bin\\Debug", "");
                 DirectoryInfo di = Directory.CreateDirectory(dir + "\\Test_Execution_Reports");
                 var htmlReporter = new ExtentSparkReporter(dir + "\\Test_Execution_Reports" + "\\Automation_Report" + ".html");
-                _extent.AddSystemInfo("Environment", "Mazda STAGE");
+                htmlReporter.Config.Theme = Theme.Dark;
+                htmlReporter.Config.ReportName = "Estatus de Pruebas Automatizadas" + DateTime.Now;
+                htmlReporter.Config.DocumentTitle = "Estatus de Pruebas Automatizadas";
+                
+                _extent.AddSystemInfo("Ambiente", "Producción");
                 _extent.AddSystemInfo("User Name", "Manuel Velasco");
+                _extent.AddSystemInfo("Navegador","Chrome");
                 _extent.AttachReporter(htmlReporter);
             }
             catch (Exception e)
@@ -72,26 +78,27 @@ namespace SeleniumExtentReportTest
                 _test = _extent.CreateTest(TestContext.CurrentContext.Test.Name);
                 var dir = AppDomain.CurrentDomain.BaseDirectory.Replace("\\bin\\Debug", "");
                 pathFile = dir + "Dealers.xlsx";
-                SLDocument sl = new SLDocument(pathFile);
-            
-                int iRow = 2;
-                int iColumn= 1;
-                arrVehiculos = new string[iRow - 1, 35];
-
-                while (!string.IsNullOrEmpty(sl.GetCellValueAsString(iRow, 1)))
+                using (SLDocument sl = new SLDocument(pathFile))
                 {
-                    string[,] newArray = new string[iRow - 1, 35];
-                    Array.Copy(arrVehiculos, newArray, arrVehiculos.Length);
-                    arrVehiculos = newArray;
-                    iColumn = 1;
-                    while (!string.IsNullOrEmpty(sl.GetCellValueAsString(iRow, iColumn)))
+                    int iRow = 2;
+                    int iColumn = 1;
+                    arrVehiculos = new string[iRow - 1, 35];
+
+                    while (!string.IsNullOrEmpty(sl.GetCellValueAsString(iRow, 1)))
                     {
-                    nombreVehiculo = sl.GetCellValueAsString(iRow, iColumn);
-                    arrVehiculos[iRow-2, iColumn-1] = nombreVehiculo;
-                    iColumn++;
+                        string[,] newArray = new string[iRow - 1, 35];
+                        Array.Copy(arrVehiculos, newArray, arrVehiculos.Length);
+                        arrVehiculos = newArray;
+                        iColumn = 1;
+                        while (!string.IsNullOrEmpty(sl.GetCellValueAsString(iRow, iColumn)))
+                        {
+                            nombreVehiculo = sl.GetCellValueAsString(iRow, iColumn);
+                            arrVehiculos[iRow - 2, iColumn - 1] = nombreVehiculo;
+                            iColumn++;
+                        }
+                        iRow++;
+                        iColumn = 1;
                     }
-                iRow++;
-                iColumn = 1;
                 }
 
                 //userEnviorement = "mazda-qa:qaqwpozxmn09";
@@ -178,7 +185,21 @@ namespace SeleniumExtentReportTest
                 throw (err);
             }
         }
-        
+
+        [Test]
+        public void Buenavista()
+        {
+            try
+            {
+                DealerSession dealerSession = new DealerSession(driver);
+                dealerSession.reviewPrices("buenavista", "Buenavista", arrVehiculos, seoCheck, fichaCheck);
+            }
+            catch (Exception err)
+            {
+                throw (err);
+            }
+        }
+
         [Test]
         public void Campeche()
         {
@@ -270,6 +291,20 @@ namespace SeleniumExtentReportTest
             {
                 DealerSession dealerSession = new DealerSession(driver);
                 dealerSession.reviewPrices("ciudad-juarez", "Ciudad Juárez", arrVehiculos, seoCheck, fichaCheck);
+            }
+            catch (Exception err)
+            {
+                throw (err);
+            }
+        }
+
+        [Test]
+        public void CdVictoria()
+        {
+            try
+            {
+                DealerSession dealerSession = new DealerSession(driver);
+                dealerSession.reviewPrices("ciudad-victoria", "Ciudad Victoria", arrVehiculos, seoCheck, fichaCheck);
             }
             catch (Exception err)
             {
@@ -515,6 +550,20 @@ namespace SeleniumExtentReportTest
         }
 
         [Test]
+        public void Ixtapaluca()
+        {
+            try
+            {
+                DealerSession dealerSession = new DealerSession(driver);
+                dealerSession.reviewPrices("ixtapaluca", "Ixtapaluca", arrVehiculos, seoCheck, fichaCheck);
+            }
+            catch (Exception err)
+            {
+                throw (err);
+            }
+        }
+
+        [Test]
         public void LaJoya()
         {
             try
@@ -730,7 +779,7 @@ namespace SeleniumExtentReportTest
             try
             {
                 DealerSession dealerSession = new DealerSession(driver);
-                dealerSession.reviewPrices("picacho-suc-san-angel", "Picacho San Ángel", arrVehiculos, seoCheck, fichaCheck);
+                dealerSession.reviewPrices("picacho-suc-san-angel", "Picacho Suc. San Ángel", arrVehiculos, seoCheck, fichaCheck);
             }
             catch (Exception err)
             {
@@ -1011,6 +1060,20 @@ namespace SeleniumExtentReportTest
             {
                 DealerSession dealerSession = new DealerSession(driver);
                 dealerSession.reviewPrices("tabasco", "Tabasco", arrVehiculos, seoCheck, fichaCheck);
+            }
+            catch (Exception err)
+            {
+                throw (err);
+            }
+        }
+
+        [Test]
+        public void Tamaulipas()
+        {
+            try
+            {
+                DealerSession dealerSession = new DealerSession(driver);
+                dealerSession.reviewPrices("tamaulipas", "Tamaulipas", arrVehiculos, seoCheck, fichaCheck);
             }
             catch (Exception err)
             {

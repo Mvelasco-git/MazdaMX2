@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
@@ -10,6 +11,8 @@ using SeleniumExtras.WaitHelpers;
 using System.Threading;
 using System.Collections.Generic;
 using DocumentFormat.OpenXml.Bibliography;
+using DocumentFormat.OpenXml.Wordprocessing;
+using AngleSharp.Text;
 
 namespace MazdaMX2Test
 {
@@ -34,7 +37,7 @@ namespace MazdaMX2Test
             _driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(60);
             _driver.Url = "https://" + enviorementUser + "@" + enviorementQA + "/distribuidores/mazda-"+ dealerSite;
             _driver.Manage().Window.Maximize();
-            _driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(60);
+            _driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(120);
         }
 
         public void ClickMethod(IWebElement buttonTest, IWebDriver _driver)
@@ -92,7 +95,7 @@ namespace MazdaMX2Test
 
             try
             {
-                Assert.AreEqual(text1, text2);
+                ClassicAssert.AreEqual(text1, text2);
             }
             catch (Exception err)
             {
@@ -206,6 +209,20 @@ namespace MazdaMX2Test
         {
             try
             {
+                string[] wordCarName = carName.Split(' ');
+
+                for (int i =0; i< wordCarName.Length; i++) {
+
+                    if (wordCarName[i].Length > 0) {
+
+                        if(!wordCarName[i].Contains("CX") && !wordCarName[i].Contains("MX")) {
+                            wordCarName[i] = char.ToUpper(wordCarName[i][0]) + wordCarName[i].Substring(1).ToLower();
+                        }
+                    }
+                }
+
+                carName = string.Join(" ", wordCarName);
+
                 this.ValidationContentText(siteDealer, dealerName);
                 this.ValidationContentText(siteDealer, carName);
             }
@@ -294,7 +311,7 @@ namespace MazdaMX2Test
 
             try
             {
-                Assert.AreEqual(number1, number2);
+                ClassicAssert.AreEqual(number1, number2);
             }
             catch (Exception err)
             {
@@ -363,13 +380,13 @@ namespace MazdaMX2Test
 
                         while (textName.Length == 0)
                         {
-                            textNameCar = new List<IWebElement>(_driver.FindElements(By.XPath("//*[@class='type2 carName table-title']")));
+                            textNameCar = new List<IWebElement>(_driver.FindElements(By.XPath("//*[@class='carName table-title']")));
                             priceCar = new List<IWebElement>(_driver.FindElements(By.XPath("//*[@class='carPrice table-title']")));
                             textName = textNameCar[i].Text;
                             carPrice = priceCar[i].Text;
                         }
 
-                        carPrice2 = carPrice.Substring(8, 7);
+                        carPrice2 = carPrice.Substring(8, carPrice.Length - 9);
                         dealerSession.ValidationText(textName, descripcion + " " + modelcar);
                         dealerSession.ValidationText(carPrice2, price);
 
@@ -408,7 +425,7 @@ namespace MazdaMX2Test
                                     price3 = dealerSession.ObtainText("//*[@class='mde-price-detail-ms active']");
                                 }
 
-                                price3 = price3.Substring(9, 7);
+                                price3 = price3.Substring(9, price2.Length);
                                 String hpVehiculo = dealerSession.ObtainText("(//*[@class='mde-specs-ms__stats--item active']/div[@class='item-stats']/div[@class='item-stats--value'])[1]");
                                 String tVehiculo = dealerSession.ObtainText("(//*[@class='mde-specs-ms__stats--item active']/div[@class='item-stats']/div[@class='item-stats--value'])[2]");
                                 String mVehiculo = dealerSession.ObtainText("(//*[@class='mde-specs-ms__stats--item active']/div[@class='item-stats']/div[@class='item-stats--value'])[3]");
