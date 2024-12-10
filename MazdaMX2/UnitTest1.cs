@@ -2,6 +2,7 @@
 using System.IO;
 using System.Threading;
 
+
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
@@ -53,13 +54,16 @@ namespace SeleniumExtentReportTest
                 var dir = AppDomain.CurrentDomain.BaseDirectory.Replace("\\bin\\Debug", "");
                 DirectoryInfo di = Directory.CreateDirectory(dir + "\\Test_Execution_Reports");
                 var htmlReporter = new ExtentSparkReporter(dir + "\\Test_Execution_Reports" + "\\Automation_Report" + ".html");
-                htmlReporter.Config.Theme = Theme.Dark;
+                
+                /*htmlReporter.Config.Theme = Theme.Dark;
                 htmlReporter.Config.ReportName = "Estatus de Pruebas Automatizadas" + DateTime.Now;
                 htmlReporter.Config.DocumentTitle = "Estatus de Pruebas Automatizadas";
-                
-                _extent.AddSystemInfo("Ambiente", "Producción");
+                */
+
+                /*_extent.AddSystemInfo("Ambiente", "Producción");
                 _extent.AddSystemInfo("User Name", "Manuel Velasco");
-                _extent.AddSystemInfo("Navegador","Chrome");
+                _extent.AddSystemInfo("Navegador","Chrome");*/
+
                 _extent.AttachReporter(htmlReporter);
             }
             catch (Exception e)
@@ -104,10 +108,16 @@ namespace SeleniumExtentReportTest
                 //userEnviorement = "mazda-qa:qaqwpozxmn09";
                 //enviorement = "qa.mdp.mzd.mx";
                 //enviorement = "www.mazda.mx";
+
                 seoCheck = false;
                 fichaCheck = true;
+
+                string chromeProfilePath = @"C:\Users\mvelasc2\source\repos\Perfil";
+                var chromeOptions = new ChromeOptions();
+                chromeOptions.AddArgument($"user-data-dir={chromeProfilePath}");
+
                 new DriverManager().SetUpDriver(new ChromeConfig());
-                driver = new ChromeDriver();
+                driver = new ChromeDriver(chromeOptions);
             }
             catch (Exception e)
             {
@@ -1256,6 +1266,20 @@ namespace SeleniumExtentReportTest
             {
                 DealerSession dealerSession = new DealerSession(driver);
                 dealerSession.reviewPrices("zapata-celaya", "Zapata Celaya", arrVehiculos, seoCheck, fichaCheck);
+            }
+            catch (Exception err)
+            {
+                throw (err);
+            }
+        }
+
+        [Test]
+        public void ZCorregidora()
+        {
+            try
+            {
+                DealerSession dealerSession = new DealerSession(driver);
+                dealerSession.reviewPrices("zapata-corregidora", "Zapata Corregidora", arrVehiculos, seoCheck, fichaCheck);
             }
             catch (Exception err)
             {

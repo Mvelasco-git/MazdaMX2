@@ -205,7 +205,7 @@ namespace MazdaMX2Test
             }
         }
 
-        public void validateSEO(string siteDealer, string dealerName, string carName) 
+        public void validateSEO(string siteDealer, string dealerName, string carName, string metaDescripcion, string priceCar) 
         {
             try
             {
@@ -225,6 +225,7 @@ namespace MazdaMX2Test
 
                 this.ValidationContentText(siteDealer, dealerName);
                 this.ValidationContentText(siteDealer, carName);
+                this.ValidationContentText(metaDescripcion, "$"+priceCar);
             }
             catch (Exception err)
             {
@@ -337,8 +338,8 @@ namespace MazdaMX2Test
                 DealerSession dealerSession = new DealerSession(_driver);
                 dealerSession.IngresarURL(userEnviorement, enviorement, masterUrlDealer);
 
-                IWebElement ctaAceptarCookies = DealerSession.WaitObjects("//a[@id='opt-accept']", _driver, 1);
-                dealerSession.ClickMethod(ctaAceptarCookies,_driver);
+                /*IWebElement ctaAceptarCookies = DealerSession.WaitObjects("//a[@id='opt-accept']", _driver, 1);
+                dealerSession.ClickMethod(ctaAceptarCookies,_driver);*/
 
                 //IWebElement lnkVehiculos = DealerSession.WaitObjects("//*[@data-analytics-link-description='VEHÍCULOS']", _driver, 0);
                 //dealerSession.ClickMethod(lnkVehiculos, _driver);
@@ -395,15 +396,17 @@ namespace MazdaMX2Test
                         string txtVehicle = dealerSession.ObtainText("//*[@class='mde-specs-title']");
                         dealerSession.ValidationText(descripcion + " " + modelcar, txtVehicle);
 
-                        nameDealer = _driver.Title;
-                        urlDealer = _driver.Url;
-
+                        
                         if (seoCheck)
                         {
-                            dealerSession.validateSEO(nameDealer, masternameDealer, textName);
-                        }
+                            nameDealer = _driver.Title;
+                            urlDealer = _driver.Url;
+                            var metaDescriptionElement = _driver.FindElement(By.XPath("//meta[@name='description']"));
+                            string metaDescription = metaDescriptionElement.GetAttribute("content");
 
-                        dealerSession.ValidationContentText(urlDealer, masterUrlDealer);
+                            dealerSession.validateSEO(nameDealer, masternameDealer, textName, metaDescription, price);
+                            dealerSession.ValidationContentText(urlDealer, masterUrlDealer);
+                        }
 
                         for (int j = 6; j < arrVehiculos.GetUpperBound(1); j += 5)
                         {
