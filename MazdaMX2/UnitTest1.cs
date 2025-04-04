@@ -1,15 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Threading;
-
-
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
 using WebDriverManager;
 using WebDriverManager.DriverConfigs.Impl;
-
-
 using AventStack.ExtentReports;
 using AventStack.ExtentReports.Reporter;
 using AventStack.ExtentReports.Reporter.Config;
@@ -53,17 +49,9 @@ namespace SeleniumExtentReportTest
                 _extent = new ExtentReports();
                 var dir = AppDomain.CurrentDomain.BaseDirectory.Replace("\\bin\\Debug", "");
                 DirectoryInfo di = Directory.CreateDirectory(dir + "\\Test_Execution_Reports");
-                var htmlReporter = new ExtentSparkReporter(dir + "\\Test_Execution_Reports" + "\\Automation_Report" + ".html");
-                
-                /*htmlReporter.Config.Theme = Theme.Dark;
-                htmlReporter.Config.ReportName = "Estatus de Pruebas Automatizadas" + DateTime.Now;
-                htmlReporter.Config.DocumentTitle = "Estatus de Pruebas Automatizadas";
-                */
-
-                /*_extent.AddSystemInfo("Ambiente", "Producción");
-                _extent.AddSystemInfo("User Name", "Manuel Velasco");
-                _extent.AddSystemInfo("Navegador","Chrome");*/
-
+                DateTime fechaHoraActual = DateTime.Now;
+                var fechaArchivo = fechaHoraActual.ToString("yyyyMMdd_HHmmss");
+                var htmlReporter = new ExtentSparkReporter(dir + "\\Test_Execution_Reports" + "\\Automation_Report_" + fechaArchivo + ".html");
                 _extent.AttachReporter(htmlReporter);
             }
             catch (Exception e)
@@ -109,12 +97,16 @@ namespace SeleniumExtentReportTest
                 //enviorement = "qa.mdp.mzd.mx";
                 //enviorement = "www.mazda.mx";
 
-                seoCheck = false;
+                seoCheck = true;
                 fichaCheck = true;
 
                 string chromeProfilePath = @"C:\Users\mvelasc2\source\repos\Perfil";
                 var chromeOptions = new ChromeOptions();
                 chromeOptions.AddArgument($"user-data-dir={chromeProfilePath}");
+                chromeOptions.AddArguments("--no-sandbox");
+                chromeOptions.AddArguments("--disable-extensions");
+                chromeOptions.AddArguments("--disable-infobars");
+                chromeOptions.AddArguments("--remote-debugging-port=9222");
 
                 new DriverManager().SetUpDriver(new ChromeConfig());
                 driver = new ChromeDriver(chromeOptions);
@@ -658,6 +650,20 @@ namespace SeleniumExtentReportTest
         }
 
         [Test]
+        public void LosFuertes()
+        {
+            try
+            {
+                DealerSession dealerSession = new DealerSession(driver);
+                dealerSession.reviewPrices("los-fuertes", "Los Fuertes", arrVehiculos, seoCheck, fichaCheck);
+            }
+            catch (Exception err)
+            {
+                throw (err);
+            }
+        }
+
+        [Test]
         public void Manzanillo()
         {
             try
@@ -1162,6 +1168,20 @@ namespace SeleniumExtentReportTest
         }
 
         [Test]
+        public void Tlaxcala()
+        {
+            try
+            {
+                DealerSession dealerSession = new DealerSession(driver);
+                dealerSession.reviewPrices("tlaxcala", "Tlaxcala", arrVehiculos, seoCheck, fichaCheck);
+            }
+            catch (Exception err)
+            {
+                throw (err);
+            }
+        }
+
+        [Test]
         public void Universidad()
         {
             try
@@ -1398,7 +1418,9 @@ namespace SeleniumExtentReportTest
                         break;
                     default:
                         logstatus = Status.Pass;
+                        screenShotPath = Capture(driver, TestContext.CurrentContext.Test.Name);
                         _test.Log(logstatus, "Estatus de la Prueba: " + logstatus);
+                        _test.Log(logstatus, "Print" + _test.AddScreenCaptureFromPath(screenShotPath));
                         break;
                 }
                 driver.Quit();
@@ -1430,13 +1452,16 @@ namespace SeleniumExtentReportTest
             string localpath = "";
             try
             {
+                DateTime fechaTakeScreen = DateTime.Now;
+                var fechaArchivo = fechaTakeScreen.ToString("yyyyMMdd_HHmmss");
+
                 Thread.Sleep(4000);
                 ITakesScreenshot ts = (ITakesScreenshot)driver;
                 Screenshot screenshot = ts.GetScreenshot();
                 string pth = System.Reflection.Assembly.GetCallingAssembly().CodeBase;
                 var dir = AppDomain.CurrentDomain.BaseDirectory.Replace("\\bin\\Debug", "");
                 DirectoryInfo di = Directory.CreateDirectory(dir + "\\Defect_Screenshots\\");
-                string finalpth = pth.Substring(0, pth.LastIndexOf("bin")) + "\\Defect_Screenshots\\" + screenShotName + ".png";
+                string finalpth = pth.Substring(0, pth.LastIndexOf("bin")) + "\\Defect_Screenshots\\" + screenShotName + "_" + fechaTakeScreen.ToString("yyyyMMdd_HHmmss") + ".png";
                 localpath = new Uri(finalpth).LocalPath;
                 screenshot.SaveAsFile(localpath);
             }

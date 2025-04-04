@@ -1,18 +1,13 @@
 ﻿using System;
 using System.Text.RegularExpressions;
-
 using NUnit.Framework;
 using NUnit.Framework.Legacy;
-
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using OpenQA.Selenium.Interactions;
 using SeleniumExtras.WaitHelpers;
 using System.Threading;
 using System.Collections.Generic;
-using DocumentFormat.OpenXml.Bibliography;
-using DocumentFormat.OpenXml.Wordprocessing;
-using AngleSharp.Text;
 
 namespace MazdaMX2Test
 {
@@ -215,13 +210,17 @@ namespace MazdaMX2Test
 
                     if (wordCarName[i].Length > 0) {
 
-                        if(!wordCarName[i].Contains("CX") && !wordCarName[i].Contains("MX")) {
+                        if(!wordCarName[i].Contains("CX") && !wordCarName[i].Contains("MX") && !wordCarName[i].Contains("RF") && !wordCarName[i].Contains("BT")) {
                             wordCarName[i] = char.ToUpper(wordCarName[i][0]) + wordCarName[i].Substring(1).ToLower();
                         }
                     }
                 }
 
                 carName = string.Join(" ", wordCarName);
+
+                if (siteDealer.Contains("Roadster") || siteDealer.Contains("ROADSTER")) {
+                    carName = carName.Replace("Mazda","Roadster").Replace("°","");
+                }
 
                 this.ValidationContentText(siteDealer, dealerName);
                 this.ValidationContentText(siteDealer, carName);
@@ -250,7 +249,7 @@ namespace MazdaMX2Test
                 else
                 {
                     //text1 = text1 + text2;
-                    text1 = text1.Replace("-", "").Replace(" ", "").ToLower();
+                    text1 = text1.Replace("-", "").Replace(" ", "").Replace("°","").ToLower();
                 }
                 this.ValidationContentText(downloadURL.Replace("-", "").Replace("_", ""), text1);
             }
@@ -328,7 +327,7 @@ namespace MazdaMX2Test
             //public string[] arrNameImage;
             //string[,] arrVehiculos;
             //string errorMessage;
-            string carPrice2;
+            //string carPrice2;
             string nameDealer;
             string urlDealer;
 
@@ -374,22 +373,22 @@ namespace MazdaMX2Test
                         dealerSession.ValidateImage(imgVehiculo, nameImage);
 
                         dealerSession.OnlyWait();
-                        List<IWebElement> textNameCar = new List<IWebElement>(_driver.FindElements(By.XPath("//*[@class='carName table-title']")));
-                        List<IWebElement> priceCar = new List<IWebElement>(_driver.FindElements(By.XPath("//*[@class='carPrice table-title']")));
+                        List<IWebElement> textNameCar = new List<IWebElement>(_driver.FindElements(By.XPath("//*[@class='carName']")));
+                        List<IWebElement> priceCar = new List<IWebElement>(_driver.FindElements(By.XPath("//*[@class='carPrice']")));
                         textName = textNameCar[i].Text;
                         carPrice = priceCar[i].Text;
 
                         while (textName.Length == 0)
                         {
-                            textNameCar = new List<IWebElement>(_driver.FindElements(By.XPath("//*[@class='carName table-title']")));
-                            priceCar = new List<IWebElement>(_driver.FindElements(By.XPath("//*[@class='carPrice table-title']")));
+                            textNameCar = new List<IWebElement>(_driver.FindElements(By.XPath("//*[@class='carName']")));
+                            priceCar = new List<IWebElement>(_driver.FindElements(By.XPath("//*[@class='carPrice']")));
                             textName = textNameCar[i].Text;
                             carPrice = priceCar[i].Text;
                         }
 
-                        carPrice2 = carPrice.Substring(8, carPrice.Length - 9);
+                        carPrice = Regex.Replace(carPrice.Substring(8, carPrice.Length - 9), @"[\r\n]+", "");
                         dealerSession.ValidationText(textName, descripcion + " " + modelcar);
-                        dealerSession.ValidationText(carPrice2, price);
+                        dealerSession.ValidationText(carPrice, price);
 
                         dealerSession.ClickMethod(imgVehiculo, _driver);
                         dealerSession.WaitIsVisible("//*[@class='mde-specs-title']");
