@@ -69,7 +69,7 @@ namespace MazdaMX2Test
         public static IWebElement WaitObjects(String objectWait, IWebDriver _driver, int sValor)
         {
             DefaultWait<IWebDriver> fluentWait = new DefaultWait<IWebDriver>(_driver);
-            fluentWait.Timeout = TimeSpan.FromSeconds(50);
+            fluentWait.Timeout = TimeSpan.FromSeconds(10);
             fluentWait.PollingInterval = TimeSpan.FromSeconds(0.5);
             fluentWait.IgnoreExceptionTypes(typeof(NoSuchElementException));
             fluentWait.Message = "Elemento no encontrado";

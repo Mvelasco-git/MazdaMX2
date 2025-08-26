@@ -97,7 +97,7 @@ namespace SeleniumExtentReportTest
                 //enviorement = "qa.mdp.mzd.mx";
                 //enviorement = "www.mazda.mx";
 
-                seoCheck = true;
+                seoCheck = false;
                 fichaCheck = true;
 
                 string chromeProfilePath = @"C:\Users\mvelasc2\source\repos\Perfil";
