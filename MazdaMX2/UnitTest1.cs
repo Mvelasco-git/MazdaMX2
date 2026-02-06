@@ -6,6 +6,7 @@ using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
 using WebDriverManager;
 using WebDriverManager.DriverConfigs.Impl;
+using WebDriverManager.Helpers;
 using AventStack.ExtentReports;
 using AventStack.ExtentReports.Reporter;
 using AventStack.ExtentReports.Reporter.Config;
@@ -14,6 +15,7 @@ using NUnit.Framework.Interfaces;
 using SpreadsheetLight;
 
 using MazdaMX2Test;
+
 
 namespace SeleniumExtentReportTest
 {
@@ -100,7 +102,7 @@ namespace SeleniumExtentReportTest
                 seoCheck = false;
                 fichaCheck = true;
 
-                string chromeProfilePath = @"C:\Users\mvelasc2\source\repos\Perfil";
+                string chromeProfilePath = @"C:\Users\manuelvelasco\source\repos\Perfil-1";
                 var chromeOptions = new ChromeOptions();
                 chromeOptions.AddArgument($"user-data-dir={chromeProfilePath}");
                 chromeOptions.AddArguments("--no-sandbox");
@@ -108,7 +110,7 @@ namespace SeleniumExtentReportTest
                 chromeOptions.AddArguments("--disable-infobars");
                 chromeOptions.AddArguments("--remote-debugging-port=9222");
 
-                new DriverManager().SetUpDriver(new ChromeConfig());
+                new DriverManager().SetUpDriver(new ChromeConfig(), VersionResolveStrategy.MatchingBrowser);
                 driver = new ChromeDriver(chromeOptions);
             }
             catch (Exception e)
