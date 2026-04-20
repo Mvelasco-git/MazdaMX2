@@ -54,24 +54,13 @@ namespace SeleniumExtentReportTest
                 DateTime fechaHoraActual = DateTime.Now;
                 var fechaArchivo = fechaHoraActual.ToString("yyyyMMdd_HHmmss");
                 var htmlReporter = new ExtentSparkReporter(dir + "\\Test_Execution_Reports" + "\\Automation_Report_" + fechaArchivo + ".html");
+                
                 _extent.AttachReporter(htmlReporter);
-            }
-            catch (Exception e)
-            {
-                throw (e);
-            }
-        }
 
-        //Obtener el nombre de la ejecución actual
-     
-        [SetUp]
-        public void BeforeTest()
-        {
-            try
-            {
-                _test = _extent.CreateTest(TestContext.CurrentContext.Test.Name);
-                var dir = AppDomain.CurrentDomain.BaseDirectory.Replace("\\bin\\Debug", "");
-                pathFile = dir + "Dealers.xlsx";
+                //Leemos nuestro archivo excel y los almacenamos en nuestro arreglo, en este caso se almacena datos del slider
+                
+                var dir2 = AppDomain.CurrentDomain.BaseDirectory.Replace("\\bin\\Debug", "");
+                pathFile = dir2 + "Dealers.xlsx";
                 using (SLDocument sl = new SLDocument(pathFile))
                 {
                     int iRow = 2;
@@ -94,7 +83,22 @@ namespace SeleniumExtentReportTest
                         iColumn = 1;
                     }
                 }
+            }
+            catch (Exception e)
+            {
+                throw (e);
+            }
+        }
 
+        //Obtener el nombre de la ejecución actual
+     
+        [SetUp]
+        public void BeforeTest()
+        {
+            try
+            {
+                _test = _extent.CreateTest(TestContext.CurrentContext.Test.Name);
+               
                 //userEnviorement = "mazda-qa:qaqwpozxmn09";
                 //enviorement = "qa.mdp.mzd.mx";
                 //enviorement = "www.mazda.mx";

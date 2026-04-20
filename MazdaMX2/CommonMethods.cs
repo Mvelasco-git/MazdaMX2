@@ -369,7 +369,7 @@ namespace MazdaMX2Test
                         IWebElement categoVehicle = DealerSession.WaitObjects("//div[@id='categories']/div[@data-category='"+ catVehiculo + "']", _driver, 1);
                         dealerSession.ClickMethod(categoVehicle,_driver);
 
-                        IWebElement imgVehiculo = DealerSession.WaitObjects("//*[@data-analytics-link-description='" + descripcion + "']/div[@class='carBox']/img", _driver, 1);
+                        IWebElement imgVehiculo = DealerSession.WaitObjects($"(//*[@class='carBox']/img)[{i+1}]", _driver, 1);
                         dealerSession.ValidateImage(imgVehiculo, nameImage);
 
                         dealerSession.OnlyWait();
